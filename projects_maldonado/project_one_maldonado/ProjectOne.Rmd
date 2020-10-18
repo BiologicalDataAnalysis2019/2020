@@ -1,0 +1,236 @@
+---
+title: "ProjectOne"
+output: html_document
+---
+
+
+# Data Project One
+
+## 100 points
+## Due Sept. 18 at midnight
+
+Below are the questions for the first data practical assignment. This project uses the "FossilAnts.csv" file, located in the data directory for the project. The point value of each question is denoted next to it. A blank cell is below each for your answer; feel free to create more blank cells as needed.
+
+0. (5 pts) Create a directory called `projects_lastname` (sub your last name for lastname), and in it, a subdirectory called `project_one_lastname`. Use `download.files` to download the instructions: 
+https://raw.githubusercontent.com/BiologicalDataAnalysis2019/2020/master/vignettes/ProjectOne.Rmd
+
+and the data 
+
+https://raw.githubusercontent.com/BiologicalDataAnalysis2019/2020/master/projects/project_one/data/FossilAnts.csv
+
+1. 5 pts. Import the `tidyverse` package and load the data using `read_csv`. The data for this part of the practical is located in the data directory. Save the data in a variable called `project_dat`. Print the data to the screen to ensure it loaded correctly.
+
+```{r}
+library(tidyverse)
+project_dat <- read_csv("/cloud/project/projects_maldonado/project_one_maldonado/FossilAnts.csv")
+project_dat
+
+
+
+```
+
+2. (5pts) Check the datatypes of each column. There is a column called reference number. This is a static identifier - it should not be changed, and is an indexer used to identify this specimen uniquely. Do we want to treat it as an integer (this is an opinion question - answers may vary).
+
+```
+The reference number column should not be treated as an integer. It is not representing some kind of continuous measurement. It is identifying information for specimens and should thus be treated as a character. 
+
+```
+
+3. (5 pts) Change the datatype of the reference number column to character. Hint: use mutate. Look at the `as.character` function.
+
+```{r}
+project_dat <- mutate(project_dat, reference_no = as.character(reference_no))
+project_dat
+```
+
+4. (5 pts) Look at your data. What are the missing data values? In particular, have a look at the `Tribe` column. In your opinion, are these intelligent missing values for the dataset? Why or why not? If not, how would you like to change them? 
+
+```
+For tribe, sometimes "None" is specified and sometimes it is left blank which automatically enters as "NA" in R. This should be standardized so either "None" should be used for all unknown tribes or they should all be left blank. Logically, I would think that no organism has a tribe of "None," just perhaps that it couldn't be identified. So I would change all missing values to NA. 
+#AMW: Good rationale here.
+
+```
+
+5. (5pts) Now do it - replace your missing values with these more logical missing values. Look at the function `na_if`, which replaces nonstandard NA values. Please first look at the help page for `na_if`.
+
+```{r}
+project_dat <- mutate(project_dat, Tribe = na_if(Tribe, "None"))
+project_dat
+```
+6. (5 points) Are there any columns in your dataset that contain two pieces of data? If so, identify them.
+
+```
+The taxon column contains both the genus and specific epithet for many specimens but not all.
+```
+
+7. (5pts) Please look at the help page for the `separate` function.
+
+```{r}
+?separate
+```
+
+
+7. (10 pts) How could you separate one column into two? 
+
+```{r}
+
+project_sp <- project_dat %>% 
+separate(taxon, c(NA, "species"))
+project_sp
+
+```
+
+```{r}
+I used the separate function but only retained the "species" column. The other components of the taxon column are conserved in "subfamily" and "genus."
+```
+
+
+Next, we will test a hypothesis. Your hypothesis is that there are more specimens in the 75 million years ago (mya) - 100 mya interval than the 30 mya to the present interval.
+
+8. (5 pts) Write out the steps you would take to address this question. Will you need to split up the data? Will you need to group the data based on the values in some column? 
+
+```
+I'm going to split the data up into two groups, project_recent (0-30 myo) and project_old (75-100 myo). Since ages of each specimen are given as a range in two columns, both will have to be filtered to accurately include all specimens. When setting the minimum age we will need to set it with min_ma and likewise for maximum. For example, to gather all of the specimens that are 0-30 myo we will have to set the minimum to >= 0 based on min_ma and the maximum was <= 30 based on the max_ma. I will set those boundaries for both project_recent and project_old and then use nrow on each data frame to return how many specimens are in each group. 
+
+I did the above before hacky hour on Wednesday and stand by using both columns!
+# AMW: And as I said then, it's mostly how I solve this challenge. Hurray for using all the data!
+
+```
+
+9. (15 pts) Perform the operations you described in (8). 
+
+```{r}
+project_recent <- project_sp %>% filter(max_ma <= 30) %>% filter(min_ma >= 0)
+nrow(project_recent)
+project_old <- project_sp %>% filter(max_ma <= 100) %>% filter(min_ma >= 75) 
+nrow(project_old)
+  
+```
+
+10. (5 pts) Do the results of your code support the hypothesis? 
+
+```
+The hypothesis is rejected because there are more specimens in the more recent (0-30 myo) group. 
+```
+
+
+11. (10 pts) Save the dataframe with the split columns into a new directory called `project_one_data_output_lastname`. Save it as a csv file called "column_separated.csv" 
+
+```{r}
+dir.create("/cloud/project/projects_maldonado/project_one_maldonado/project_one_data_output_maldonado")
+write.csv(project_sp, ("/cloud/project/projects_maldonado/project_one_maldonado/project_one_data_output_maldonado/project_sp.csv"))
+
+```
+
+12. (10 pts) What is the most numerous subfamily? Print the subfamilies in descnding order.
+```{r}
+project_sp %>% count(subfamily, sort = TRUE)
+# AMW: Nice one-liner.  
+```
+```{r}
+The most numerous subfamily is Formicinae with n = 209. 
+```
+
+## Grad Students
+
+Do the undergrad part of the exam. It's actually kind of hard?  Find your name below for the additional part of the exam to complete.
+
+### Tyler
+
+1. Replace your '?' with NAs.
+```{r}
+
+
+```
+2. Convert your date column to a date object with `lubridate`. Store as a year column, month column, day column.
+```{r}
+
+
+```
+3. Save in your project one folder as "tyler_modified_data.csv"
+```{r}
+
+
+```
+### Ariel
+
+1. If you were to group by Oiling Category, and calculate, say, the mean above ground biomass, some of your categories are going to be near zero because of all the zeroes. Replace your 0s with NAs. (Note - I'm aware I might have just described the correct outcome of your analysis. Humor me anyway.)
+```{r}
+
+
+```
+2. Convert your date column to a date object with `lubridate`. Store as a year column, month column, day column.
+```{r}
+
+
+```
+3. Save in your project one folder as "ariel_modified_data.csv"
+```{r}
+
+
+```
+### Tess & Nick
+
+1. Which site has the highest mean diameter for the _Acer rubrum_ in 2016? Does the same site have the largest diameter all years?
+```{r}
+
+
+```
+2.  Which tree has the largest average diameter? 
+```{r}
+
+
+```
+
+### Victoria 
+
+I'm going to have you do something a little different. You're going to reshape your dataset. Ultimately, you will have four columns: Treatment, Specimen, Date Entered, Days until death. The final columns should be how many days the animal lived before death. If it was entered 3/13/20 and made it to 3/15/20, put '2'. 
+
+Export as a CSV and put on your RStudio server. Which treatment had the highest average days until death?
+
+```{r}
+
+```
+
+
+### Josh
+
+1. I'm looking at the SirenSpecimenRecords spreadsheet. Make sure when you read it in, the blanks read in as NA. If not, replace them.
+```{r}
+
+
+```
+
+2. Split your species column into genus and species columns, but retain what you're currently calling species as "Specific Epithet".
+```{r}
+
+
+```
+
+3. Save in your project one folder as "josh_modified_data.csv"
+```{r}
+
+
+```
+
+### Elisabeth
+
+These spreadsheets are great. Very consistent.
+
+1. What is the most commonly-collected species on here. I'm not sure if any of the species names are shared across genera (ie Genus_species, Genus1_species). If so, you might consider using `unite()` to put the genus and species columns into one cell before counting.
+```{r}
+
+
+```
+
+2. Which site has the most observations?
+```{r}
+
+
+```
+
+## Brittany and Claire
+
+I cleaned up the data a lot. I got rid of a lot of columns that would not be required for the type of data analysis I want to do. I standardized all instances of leopard frogs to "Northern Leopard Frog," but still have some other work to do. I need to talk to Dr. Beachy about a few things, such as "Chorus Frog." Those could be two or more species. I got rid of all the duplicate rows from erroneous data entry. I did not keep the "user" so it was just a matter of searching and deleting all of the rows. I read in the cleaned up dataset and all of the column types and NA values look good. 
+
+#AMW: Awesome. That dataset was a little bit of a mess and would have been pretty tricky to work with
