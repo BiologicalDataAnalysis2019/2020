@@ -133,7 +133,7 @@ ggplot(surveys_complete, aes(x = sex, y = weight, color = sex)) + geom_jitter() 
 1) Add and commit this document (5 pts)
 
 ```
-#Commands here
+#I went into the Git window, checked the files I had amended and wanted committed, then clicked Commit. I added a comment to it and commited them. It said it inserted 6 files. 
 ```
 
 2) Push your changes to github (10 pts)
