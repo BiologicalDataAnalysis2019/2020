@@ -1,0 +1,374 @@
+---
+title: "ProjectOne"
+output: html_document
+---
+
+
+# Data Project One
+
+## 100 points
+## Due Sept. 18 at midnight
+
+Below are the questions for the first data practical assignment. This project uses the "FossilAnts.csv" file, located in the data directory for the project. The point value of each question is denoted next to it. A blank cell is below each for your answer; feel free to create more blank cells as needed.
+
+0. (5 pts) Create a directory called `projects_lastname` (sub your last name for lastname), and in it, a subdirectory called `project_one_lastname`. Use `download.files` to download the instructions: 
+https://raw.githubusercontent.com/BiologicalDataAnalysis2019/2020/master/vignettes/ProjectOne.Rmd
+
+and the data 
+
+https://raw.githubusercontent.com/BiologicalDataAnalysis2019/2020/master/projects/project_one/data/FossilAnts.csv
+
+1. 5 pts. Import the `tidyverse` package and load the data using `read_csv`. The data for this part of the practical is located in the data directory. Save the data in a variable called `project_dat`. Print the data to the screen to ensure it loaded correctly.
+
+```{r}
+ library(tidyverse)
+ project_dat <- read_csv("/cloud/project/projects_Pigott/project_one_Pigott/FossilAntsdata.csv")
+ 
+```
+ 
+Parsed with column specification:
+cols(
+  taxon = col_character(),
+  reference_no = col_double(),
+  subfamily = col_character(),
+  Tribe = col_character(),
+  Genus = col_character(),
+  Fossil = col_character(),
+  min_ma = col_double(),
+  max_ma = col_double(),
+  Notes = col_character()
+)
+ print(project_dat)
+# A tibble: 789 x 9
+   taxon               reference_no subfamily       Tribe      Genus       Fossil min_ma max_ma Notes
+   <chr                      <dbl <chr           <chr      <chr       <chr   <dbl  <dbl <chr
+ 1 Agroecomyrmex_duis…        44414 Agroecomyrmeci… None       Agroecomyr… Yes     33.9    38   Note 
+ 2 Eulithomyrmex_rugo…         4971 Agroecomyrmeci… None       Eulithomyr… Yes     33.9    37.2 Note 
+ 3 Eulithomyrmex_stri…         4971 Agroecomyrmeci… None       Eulithomyr… Yes     33.9    37.2 Note 
+ 4 Ambyloponinae              59088 Ambyloponinae   None       None        Yes     20.4    23.0 Note 
+ 5 Amblyoponini               53165 Ambyloponinae   Amblyopon… Amblyoponi… Yes     20.4    23.0 Note 
+ 6 Casaleia_eocenica          43781 Ambyloponinae   None       Casaleia    Yes     40.4    48.6 Note 
+ 7 Casaleia_inversa           41286 Ambyloponinae   None       Casaleia    Yes      5.33   16.0 Note 
+ 8 Casaleia_longivent…        37344 Ambyloponinae   None       Casaleia    Yes     11.6    12.7 Note 
+ 9 Casaleia_orientalis        56094 Ambyloponinae   None       Casaleia    Yes     33.9    38   Note 
+10 Myopopone_sinensis         16579 Ambyloponinae   None       Myopopone   Yes     11.6    16.0 Note 
+# … with 779 more rows
+```
+
+2. (5pts) Check the datatypes of each column. There is a column called reference number. This is a static identifier - it should not be changed, and is an indexer used to identify this specimen uniquely. Do we want to treat it as an integer (this is an opinion question - answers may vary).
+
+```
+I, too, use a unique identifier (ID number) for all of my specimens. I wouldn't treat this as an integer because there are going to be no analyses using the numbers. They are simply the unique name of the specimen. 
+```
+
+3. (5 pts) Change the datatype of the reference number column to character. Hint: use mutate. Look at the `as.character` function.
+
+```{r}
+ project_dat %% 
+ mutate(as.character(reference_no))
+``` 
+ 
+# A tibble: 789 x 10
+   taxon    reference_no subfamily  Tribe  Genus Fossil min_ma max_ma Notes `as.character(re…
+   <chr           <dbl <chr      <chr  <chr <chr   <dbl  <dbl <chr <chr            
+ 1 Agroeco…        44414 Agroecomy… None   Agro… Yes     33.9    38   Note  44414            
+ 2 Eulitho…         4971 Agroecomy… None   Euli… Yes     33.9    37.2 Note  4971             
+ 3 Eulitho…         4971 Agroecomy… None   Euli… Yes     33.9    37.2 Note  4971             
+ 4 Ambylop…        59088 Ambylopon… None   None  Yes     20.4    23.0 Note  59088            
+ 5 Amblyop…        53165 Ambylopon… Ambly… Ambl… Yes     20.4    23.0 Note  53165            
+ 6 Casalei…        43781 Ambylopon… None   Casa… Yes     40.4    48.6 Note  43781            
+ 7 Casalei…        41286 Ambylopon… None   Casa… Yes      5.33   16.0 Note  41286            
+ 8 Casalei…        37344 Ambylopon… None   Casa… Yes     11.6    12.7 Note  37344            
+ 9 Casalei…        56094 Ambylopon… None   Casa… Yes     33.9    38   Note  56094            
+10 Myopopo…        16579 Ambylopon… None   Myop… Yes     11.6    16.0 Note  16579            
+# … with 779 more rows
+```
+
+4. (5 pts) Look at your data. What are the missing data values? In particular, have a look at the `Tribe` column. In your opinion, are these intelligent missing values for the dataset? Why or why not? If not, how would you like to change them? 
+
+```
+These are not intelligent missing values because they are character values that are still meaningful to the computer. I would substitute None for NA because the computer recognizes NA as nothing there (NA = No Answer, right?).
+
+```
+
+5. (5pts) Now do it - replace your missing values with these more logical missing values. Look at the function `na_if`, which replaces nonstandard NA values. Please first look at the help page for `na_if`.
+
+```{r}
+ na_if(project_dat, "None")
+
+```
+# A tibble: 789 x 9
+   taxon               reference_no subfamily       Tribe      Genus       Fossil min_ma max_ma Notes
+   <chr                      <dbl <chr           <chr      <chr       <chr   <dbl  <dbl <chr
+ 1 Agroecomyrmex_duis…        44414 Agroecomyrmeci… NA         Agroecomyr… Yes     33.9    38   Note 
+ 2 Eulithomyrmex_rugo…         4971 Agroecomyrmeci… NA         Eulithomyr… Yes     33.9    37.2 Note 
+ 3 Eulithomyrmex_stri…         4971 Agroecomyrmeci… NA         Eulithomyr… Yes     33.9    37.2 Note 
+ 4 Ambyloponinae              59088 Ambyloponinae   NA         NA          Yes     20.4    23.0 Note 
+ 5 Amblyoponini               53165 Ambyloponinae   Amblyopon… Amblyoponi… Yes     20.4    23.0 Note 
+ 6 Casaleia_eocenica          43781 Ambyloponinae   NA         Casaleia    Yes     40.4    48.6 Note 
+ 7 Casaleia_inversa           41286 Ambyloponinae   NA         Casaleia    Yes      5.33   16.0 Note 
+ 8 Casaleia_longivent…        37344 Ambyloponinae   NA         Casaleia    Yes     11.6    12.7 Note 
+ 9 Casaleia_orientalis        56094 Ambyloponinae   NA         Casaleia    Yes     33.9    38   Note 
+10 Myopopone_sinensis         16579 Ambyloponinae   NA         Myopopone   Yes     11.6    16.0 Note 
+# … with 779 more rows
+```
+6. (5 points) Are there any columns in your dataset that contain two pieces of data? If so, identify them.
+
+```
+The taxon column contains 2 pieces of data: genus and species.
+```
+
+7. (5pts) Please look at the help page for the `separate` function.
+
+```{r}
+?"separate"
+#AMW: no quotes
+```
+
+
+7. (10 pts) How could you separate one column into two? 
+
+```{r}
+ project_dat<-separate(project_dat, taxon, into = c("genus", "species"), sep = "_")
+ #AMW: Need to save this to something for the next commands to work 8/10
+```
+
+Next, we will test a hypothesis. Your hypothesis is that there are more specimens in the 75 million years ago (mya) - 100 mya interval than the 30 mya to the present interval.
+
+8. (5 pts) Write out the steps you would take to address this question. Will you need to split up the data? Will you need to group the data based on the values in some column? 
+
+```
+I would group max_ma together and filter out the numbers that I need. Max_ma is the maximum age a specimen could be, and to be sure I include all possible specimens, I would use this column to filter. I would filter everything based on being either between 75 mya - 100 mya and 30 mya to the present interval. If I can get numbers of each grouping, then I can compare which group contains more specimens by looking at the number of rows.
+```
+
+9. (15 pts) Perform the operations you described in (8). 
+
+```{r}
+ project_dat %% 
+ filter(max_ma,  75) %% 
+ filter(max_ma < 100) %% 
+ group_by(taxon, max_ma)
+project_dat
+``` 
+# A tibble: 61 x 9
+# Groups:   taxon, max_ma [61]
+   taxon                    reference_no subfamily   Tribe Genus        Fossil min_ma max_ma Notes   
+   <chr                           <dbl <chr       <chr <chr        <chr   <dbl  <dbl <chr   
+ 1 Burmomyrma_rossi                39313 Aneuretinae None  Burmomyrma   Yes      93.5   99.6 Note    
+ 2 Cananeuretus_occidental…        36535 Aneuretinae None  Cananeuretus Yes      70.6   83.5 Note    
+ 3 Archaeopone_kzylzharica         37059 Armaniinae  None  Archaeopone  Yes      89.8   93.9 Note    
+ 4 Archaeopone_taylori             35238 Armaniinae  None  Archaeopone  Yes      70.6   83.5 Note    
+ 5 Armania                         39728 Armaniinae  None  Armania      Yes      89.8   93.9 Note    
+ 6 Armania_capitata                39728 Armaniinae  None  Armania      Yes      89.8   93.9 Note    
+ 7 Armania_curiosa                 35238 Armaniinae  None  Armania      Yes      70.6   83.5 Note    
+ 8 Armania_pristina                39728 Armaniinae  None  Armania      Yes      89.8   93.9 Note    
+ 9 Armania_robusta                 35238 Armaniinae  None  Armania      Yes      70.6   83.5 Stem An…
+10 Dolichomyrma_latipes            37059 Armaniinae  None  Dolichomyrma Yes      89.8   93.9 Note    
+# … with 51 more rows
+ 
+```{r} 
+  project_dat %% 
+ filter(max_ma < 30) %% 
+ filter(max_ma,  0) %% 
+ group_by(taxon, max_ma)
+ #AMW: This doesn't work for me - perhaps a missing missdle step? 
+``` 
+
+# A tibble: 313 x 9
+# Groups:   taxon, max_ma [313]
+   taxon                 reference_no subfamily      Tribe      Genus      Fossil min_ma max_ma Notes
+   <chr                        <dbl <chr          <chr      <chr      <chr   <dbl  <dbl <chr
+ 1 Ambyloponinae                59088 Ambyloponinae  None       None       Yes     20.4    23.0 Note 
+ 2 Amblyoponini                 53165 Ambyloponinae  Amblyopon… Amblyopon… Yes     20.4    23.0 Note 
+ 3 Casaleia_inversa             41286 Ambyloponinae  None       Casaleia   Yes      5.33   16.0 Note 
+ 4 Casaleia_longiventris        37344 Ambyloponinae  None       Casaleia   Yes     11.6    12.7 Note 
+ 5 Myopopone_sinensis           16579 Ambyloponinae  None       Myopopone  Yes     11.6    16.0 Note 
+ 6 Alloiomma_changweien…        16579 Dolichoderinae None       Alloiomma  Yes     11.6    16.0 Note 
+ 7 Alloiomma_differenti…        36942 Dolichoderinae None       Alloiomma  Yes     11.6    16.0 Note 
+ 8 Azteca                       49381 Dolichoderinae NA         Azteca     Yes     16.0    23.0 Note 
+ 9 Azteca_alpha                  5207 Dolichoderinae NA         Azteca     Yes     13.8    20.4 Note 
+10 Azteca_eumeces                5207 Dolichoderinae NA         Azteca     Yes     13.8    20.4 Note 
+# … with 303 more rows
+  
+```
+
+10. (5 pts) Do the results of your code support the hypothesis? 
+
+```
+No, they do not. There are 313 specimens that are 30 myo - present and only 61 specimens that are 100-75 myo.
+```
+
+
+11. (10 pts) Save the dataframe with the split columns into a new directory called `project_one_data_output_lastname`. Save it as a csv file called "column_separated.csv" 
+
+```{r}
+ project_one_data_output_Pigott <- separate(project_dat, taxon, into = c("genus", "species"), sep = "_")
+Warning messages:
+1: Expected 2 pieces. Additional pieces discarded in 1 rows [51]. 
+2: Expected 2 pieces. Missing pieces filled with `NA` in 47 rows [4, 5, 17, 27, 44, 49, 50, 123, 125, 131, 132, 152, 174, 175, 176, 197, 199, 200, 206, 253, ...]. 
+ write.csv(project_one_data_output_Pigott, "/cloud/project/projects_Pigott/project_one_Pigott/column_separated.csv")
+
+```
+
+12. (10 pts) What is the most numerous subfamily? Print the subfamilies in descending order.
+```{r}
+#Formiciinae.
+ project_dat %% 
+ count(subfamily) %% 
+ arrange(desc(n))
+ 
+```
+# A tibble: 20 x 2
+   subfamily             n
+   <chr             <int
+ 1 Formicinae          209
+ 2 Myrmicinae          171
+ 3 Dolichoderinae      129
+ 4 Ponerinae            99
+ 5 Sphecomyrminae       34
+ 6 Pseudomyrmecinae     21
+ 7 Incertae             19
+ 8 Myrmiciinae          19
+ 9 Armaniinae           15
+10 Ectatomminae         13
+11 Proceratiinae        13
+12 Aneuretinae          12
+13 Dorylinae            11
+14 Ambyloponinae         9
+15 Fomiciinae            5
+16 Agroecomyrmecinae     3
+17 None                  3
+18 Paraponerinae         2
+19 Brownimeciinae        1
+20 Insect                1
+
+
+
+```
+
+## Grad Students
+
+Do the undergrad part of the exam. It's actually kind of hard?  Find your name below for the additional part of the exam to complete.
+
+### Tyler
+
+1. Replace your '?' with NAs.
+```{r}
+
+
+```
+2. Convert your date column to a date object with `lubridate`. Store as a year column, month column, day column.
+```{r}
+
+
+```
+3. Save in your project one folder as "tyler_modified_data.csv"
+```{r}
+
+
+```
+### Ariel
+
+1. If you were to group by Oiling Category, and calculate, say, the mean above ground biomass, some of your categories are going to be near zero because of all the zeroes. Replace your 0s with NAs. (Note - I'm aware I might have just described the correct outcome of your analysis. Humor me anyway.)
+```{r}
+
+
+```
+2. Convert your date column to a date object with `lubridate`. Store as a year column, month column, day column.
+```{r}
+
+
+```
+3. Save in your project one folder as "ariel_modified_data.csv"
+```{r}
+
+
+```
+### Tess & Nick
+
+1. Which site has the highest mean diameter for the _Acer rubrum_ in 2016? Does the same site have the largest diameter all years?
+```{r}
+
+
+```
+2.  Which tree has the largest average diameter? 
+```{r}
+
+
+```
+
+### Victoria 
+
+I'm going to have you do something a little different. You're going to reshape your dataset. Ultimately, you will have four columns: Treatment, Specimen, Date Entered, Days until death. The final columns should be how many days the animal lived before death. If it was entered 3/13/20 and made it to 3/15/20, put '2'. 
+
+Export as a CSV and put on your RStudio server. Which treatment had the highest average days until death?
+
+```{r}
+
+```
+
+
+### Josh
+
+1. I'm looking at the SirenSpecimenRecords spreadsheet. Make sure when you read it in, the blanks read in as NA. If not, replace them.
+```{r}
+
+
+```
+
+2. Split your species column into genus and species columns, but retain what you're currently calling species as "Specific Epithet".
+```{r}
+
+
+```
+
+3. Save in your project one folder as "josh_modified_data.csv"
+```{r}
+
+
+```
+
+### Elisabeth
+
+These spreadsheets are great. Very consistent.
+
+1. What is the most commonly-collected species on here. I'm not sure if any of the species names are shared across genera (ie Genus_species, Genus1_species). If so, you might consider using `unite()` to put the genus and species columns into one cell before counting.
+```{r}
+#Eucera_NA is the most commonly collected species (technically just a genus for  # now). Unfortunately, I haven't had enough time to actually key any of those out # to their true species, so Eucera will not be number 1 for very long!
+
+ bee_data %% 
+ unite("Species", Genus:Specific_epithet) %% 
+ count(Species) %% 
+ arrange(desc(n))
+```
+
+2. Which site has the most observations?
+```{r}
+Site 2.
+
+ bee_data %% 
+ count(Site_number)
+
+```
+
+## Brittany and Claire
+
+1. There is a package loaded we haven't used yet, `readexl`
+
+```
+library(readxl)
+```
+
+See if you can read in the `measurements` spreadsheet in your Excel worksheet. Pick two or three columns in the `ratios` spreadsheet and see if you can reproduce them in R here:
+
+```{r}
+
+
+```
+
+2. Save the measurements spreadsheet as a csv file.
+
+```{r}
+
+
+```
