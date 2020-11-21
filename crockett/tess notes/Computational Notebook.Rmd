@@ -258,6 +258,62 @@ speciesCount$Common.Name
 ```
 went from 40 to down to like 34
 
+##November 9th, 2020
+project 3 is an R package on github with three functions and full documentation. goal of final is a tutorial showing classmates how to run functions
+
+
+today, aspects of package creation 9/11 oriented towards walking through and developing package, testing or unit testing. writing small checks such that you can know that your package is doing what it's supposed to be doing. 
+
+creating R pkg - have to have R on personal machine, added git
+write a unit test for one of our functions
+create new r script, create dummy function, then write unit test to go with it
+**include @export below param and return, this makes sure that this particular object will be exported as a function
+
+#' Calculates area of a square
+#' 
+#' @param side_length length of a side of a square
+#' @return area_of_square
+#' 
+#' @export
+#' 
+
+square_calc <- function(side_length){
+  area <- side_length^2
+  return(area)
+}
+
+save
+highlight function, hit run, it will send to console, then type function and a number and it will run it
+how do we know it worked? 
+idiot proof it
+install.packages("assertthat")
+testing makes sure that we have the inputs that function expects to received, performing work that is expected, and outputs are what we expect
+most problems with code occur bc you are trying to do something with code that it is not programmed to do i.e. taking square of a letter
+add this into function 
+side_length % has_attr % "numeric"
+now is 
+square_calc <- function(side_length){
+  assert_that(is.numeric(side_length))
+  area <- side_length^2
+  return(area)
+}
+now gives helpful error message if non numeric is inserted
+things like assert that are called pre conditions, they mean that you don't end up wasting a ton of time attempting to run a function on data it's not meant to run on 
+now insert post conditions
+EX: assert_that(sqrt(area) == side_length), so if you had put raise to the power of 4 instead of 2 in the function, the function would fail
+pre conditions check input
+post conditions check output
+collectively referred to as testing
+
+##what tests can I use for my functions? numeric, no larger than 2 digits? in above or below for pre testing; maybe == belowground/aboveground, and NOT vice versa for correct ratio?
+
+install devtools
+install usethis
+
+##November 11, 2020
+
+
+
 
 
 
